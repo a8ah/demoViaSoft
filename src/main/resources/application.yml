@@ -1,0 +1,22 @@
+  server:
+    port: 9898
+
+  spring:
+    application.name: Selection
+    profiles.active: dev
+    jpa:
+      database: POSTGRESQL
+      show-sql: true
+      hibernate:
+        ddl-auto: update
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect
+          jdbc:
+            lob:
+              nom_contextual_creation: true
+    datasource:
+      username: postgres
+      password: postgres
+      url: jdbc:postgresql://10.0.0.2:5432/viasoft
+      driver-class-name: org.postgresql.Driver
