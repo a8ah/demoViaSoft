@@ -5,6 +5,7 @@ import java.util.List;
 import com.example.entity.Servicio;
 import com.example.entity.ServicioStatusHistory;
 import com.example.entity.State;
+import com.example.projection.MoreAffectedState;
 import com.example.request.ServicioRequest;
 import com.example.response.SuccessResponse;
 import com.example.service.ServicioServiceImpl;
@@ -37,6 +38,11 @@ public class ServicioStatusHistoryController {
     return mService.getALl();
   }
 
+  // Top 5 de Programas de Apoyo con mas Beneficiarios
+  @GetMapping("more-affected-state")
+  public MoreAffectedState moreAffectedState() {
+    return mService.moreAffectedState();
+  }
 
 
   

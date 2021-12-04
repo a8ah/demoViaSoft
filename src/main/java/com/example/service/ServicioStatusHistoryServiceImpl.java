@@ -15,8 +15,11 @@ import com.example.entity.Servicio;
 import com.example.entity.ServicioStatusHistory;
 import com.example.entity.State;
 import com.example.entity.Status;
+import com.example.projection.MoreAffectedState;
 import com.example.repo.IServicioStatusHistoryRepository;
 import com.example.repo.IStateRepository;
+import com.example.repo.MoreAffectedStateRepository;
+import com.example.specification.MoreAffectedStatePeriodSpecification;
 import com.example.repo.IServicioRepository;
 
 import org.apache.commons.logging.Log;
@@ -26,11 +29,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 @Service
-public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryService{
+public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryService {
 
   protected final Log logger = LogFactory.getLog(this.getClass());
 
-@Autowired
+  @Autowired
   IServicioStatusHistoryRepository mRepository;
 
   @Autowired
@@ -40,57 +43,58 @@ public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryS
   IServicioRepository mServicioRepository;
 
   @Autowired
+  MoreAffectedStateRepository mMoreAffectedStateRepository;
+
+  @Autowired
   ServicioServiceImpl mServicioServiceImpl;
 
   @Autowired
   StateServiceImpl mStateServiceImpl;
 
-@Override
-public List<ServicioStatusHistory> getALl() {
-  return mRepository.findAll();
-}
+  @Override
+  public List<ServicioStatusHistory> getALl() {
+    return mRepository.findAll();
+  }
 
-@Override
-public Optional<ServicioStatusHistory> findById(UUID id) {
-  // TODO Auto-generated method stub
-  return null;
-}
+  @Override
+  public Optional<ServicioStatusHistory> findById(UUID id) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-@Override
-@Transactional
-public boolean crear(ServicioStatusHistory service) {
+  @Override
+  @Transactional
+  public boolean crear(ServicioStatusHistory service) {
 
-  if (service.getId() == null) {
-    service.setEliminado(false);
-    service.setCreado(LocalDateTime.now());
+    if (service.getId() == null) {
+      service.setEliminado(false);
+      service.setCreado(LocalDateTime.now());
     } else {
       service.setModificado(LocalDateTime.now());
-    }    
-  mRepository.save(service);
-  return true;
-}
+    }
+    mRepository.save(service);
+    return true;
+  }
 
-@Override
-public String delete(UUID id) {
-  // TODO Auto-generated method stub
-  return null;
-}
+  @Override
+  public String delete(UUID id) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-@Override
-public String update(UUID id) {
-  // TODO Auto-generated method stub
-  return null;
-}
+  @Override
+  public String update(UUID id) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
+  public void consult(Document doc) {
 
-public void consult(Document doc) {
-
-  final String green = "verde";
-  final String yellow = "amarela";
-  final String red = "vermelho";
-  final String notAvailable = "-";
-  final String notPresent = "";
-
+    final String green = "verde";
+    final String yellow = "amarela";
+    final String red = "vermelho";
+    final String notAvailable = "-";
+    final String notPresent = "";
 
     final Map<String, State> stateMap = new HashMap<>();
     mStateRepository.findAll().forEach(f -> stateMap.put(f.getName(), f));
@@ -108,11 +112,11 @@ public void consult(Document doc) {
     for (int i = 1; i < trElements.size(); i++) {
       Element row = trElements.get(i);
       Elements col = row.select("td");
-      
-      //Recorriendo <td> 
+
+      // Recorriendo <td>
       for (int j = 1; j < col.size(); j++) {
         // Creating ServicioStatusHistory entity
-        ServicioStatusHistory entHistory = new ServicioStatusHistory();          
+        ServicioStatusHistory entHistory = new ServicioStatusHistory();
 
         // Validating State
         System.out.println("Estado is: " + col.get(0).childNode(0));
@@ -124,53 +128,53 @@ public void consult(Document doc) {
           // mStateServiceImpl.crear(newState);
           // stateMap.put(col.get(0).childNode(0).toString().toString(),newState);
           // entHistory.setState(newState);
-        }else{
+        } else {
           entHistory.setState(state);
         }
-        
 
         // Validating Service
         System.out.println("Servicio is: " + trElements.get(0).childNode(j + 1).childNodes().get(0));
-        final var  servicio = servicioMap.get(trElements.get(0).childNode(j + 1).childNodes().get(0).toString());
+        final var servicio = servicioMap.get(trElements.get(0).childNode(j + 1).childNodes().get(0).toString());
         if (servicio == null) {
-         // Crear el nuevo servicio
-          Servicio newServicio= new Servicio();
+          // Crear el nuevo servicio
+          Servicio newServicio = new Servicio();
           newServicio.setName(trElements.get(0).childNode(j + 1).childNodes().get(0).toString());
           mServicioServiceImpl.crear(newServicio);
-          servicioMap.put(trElements.get(0).childNode(j + 1).childNodes().get(0).toString(),newServicio);
+          servicioMap.put(trElements.get(0).childNode(j + 1).childNodes().get(0).toString(), newServicio);
           entHistory.setService(newServicio);
-        }else{
+        } else {
           entHistory.setService(servicio);
         }
 
         // Validating Service Status
         Element cel = col.get(j);
-        final var actualStatus= cel.childNode(0).attributes().toString();
+        final var actualStatus = cel.childNode(0).attributes().toString();
         System.out.println("Status is: " + cel.childNode(0).attributes().toString());
 
-        if(actualStatus.contains(green)){
+        if (actualStatus.contains(green)) {
           // Status Active
           entHistory.setStatus(Status.ACTIVE);
-        }else if(actualStatus.contains(yellow)){
+        } else if (actualStatus.contains(yellow)) {
           // Status Pending
           entHistory.setStatus(Status.PENDING);
-        }else if(actualStatus.contains(red)){
+        } else if (actualStatus.contains(red)) {
           // Status Down
           entHistory.setStatus(Status.INACTIVE);
-        }else if(actualStatus.contains(notAvailable)){
+        } else if (actualStatus.contains(notAvailable)) {
           // Status NOt Available
           entHistory.setStatus(Status.NOT_AVAILABLE);
-        }else{
+        } else {
           // Starus Not Present
           entHistory.setStatus(Status.NOTPRESENT);
         }
         this.crear(entHistory);
       }
     }
-    System.out.println("End"); 
-}
+    System.out.println("End");
+  }
 
-
-
+  public MoreAffectedState moreAffectedState(){
+    return mMoreAffectedStateRepository.moreAffectedState();
+  }
 
 }
