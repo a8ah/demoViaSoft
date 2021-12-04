@@ -137,11 +137,11 @@ public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryS
         final var servicio = servicioMap.get(trElements.get(0).childNode(j + 1).childNodes().get(0).toString());
         if (servicio == null) {
           // Crear el nuevo servicio
-          Servicio newServicio = new Servicio();
-          newServicio.setName(trElements.get(0).childNode(j + 1).childNodes().get(0).toString());
-          mServicioServiceImpl.crear(newServicio);
-          servicioMap.put(trElements.get(0).childNode(j + 1).childNodes().get(0).toString(), newServicio);
-          entHistory.setService(newServicio);
+          // Servicio newServicio = new Servicio();
+          // newServicio.setName(trElements.get(0).childNode(j + 1).childNodes().get(0).toString());
+          // mServicioServiceImpl.crear(newServicio);
+          // servicioMap.put(trElements.get(0).childNode(j + 1).childNodes().get(0).toString(), newServicio);
+          // entHistory.setService(newServicio);
         } else {
           entHistory.setService(servicio);
         }

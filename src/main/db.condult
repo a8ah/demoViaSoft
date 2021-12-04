@@ -1,0 +1,13 @@
+
+// task 6
+SELECT state_id,   count (state_id)  FROM base.servicio_status_history as history
+Where history.status='PENDING' or history.status='INACTIVE' 
+Group By history.state_id  Order By  count (state_id) DESC limit 1
+
+//Task 3
+SELECT status, creado, service_id FROM base.servicio_status_history  
+Where state_id= '87182fd4-0a0d-41c6-85f8-8299e5e20506'
+Order By  creado  DESC limit 8
+
+
+
