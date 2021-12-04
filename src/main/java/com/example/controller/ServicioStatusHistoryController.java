@@ -1,5 +1,7 @@
 package com.example.controller;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.apache.commons.logging.Log;
@@ -31,7 +34,7 @@ import org.modelmapper.ModelMapper;
 public class ServicioStatusHistoryController {
 
   protected final Log logger = LogFactory.getLog(this.getClass());
-  
+
   @Autowired
   ServicioStatusHistoryServiceImpl mService;
   // private final ServicioService mServicioService;
@@ -53,7 +56,19 @@ public class ServicioStatusHistoryController {
 
   @GetMapping("actual-status/{id}")
   public Object actualServiceStatusByState(@PathVariable UUID id) {
-      return mService.actualServiceStatusByState(id);
+    return mService.actualServiceStatusByState(id);
   }
-  
+
+  @GetMapping("status-by-time-range")
+  public Object serviceStatusByTimeRange(@RequestParam(required = false) String startDate,
+      @RequestParam(required = false) String endDate) {  
+
+    // convert String to LocalDate
+    LocalDate inicialDate = LocalDate.parse(startDate);
+    LocalDate finalDate = LocalDate.parse(endDate);
+
+
+    return mService.serviceStatusByTimeRange(inicialDate, finalDate);
+  }
+
 }
