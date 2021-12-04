@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,12 @@ import com.example.entity.ServicioStatusHistory;
 import com.example.entity.State;
 import com.example.entity.Status;
 import com.example.projection.MoreAffectedState;
+import com.example.projection.ServiceActualState;
+import com.example.projection.StateActualServicioStatus;
 import com.example.repo.IServicioStatusHistoryRepository;
 import com.example.repo.IStateRepository;
 import com.example.repo.MoreAffectedStateRepository;
+import com.example.repo.StateActualServiceStatusRepository;
 import com.example.specification.MoreAffectedStatePeriodSpecification;
 import com.example.repo.IServicioRepository;
 
@@ -44,6 +48,9 @@ public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryS
 
   @Autowired
   MoreAffectedStateRepository mMoreAffectedStateRepository;
+
+  @Autowired
+  StateActualServiceStatusRepository mStateActualServiceStatusRepository;
 
   @Autowired
   ServicioServiceImpl mServicioServiceImpl;
@@ -175,6 +182,29 @@ public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryS
 
   public MoreAffectedState moreAffectedState(){
     return mMoreAffectedStateRepository.moreAffectedState();
+  }
+
+  public StateActualServicioStatus actualServiceStatusByState(UUID id){ 
+    final State state = mStateRepository.findById(id).orElse(null);
+    try {
+      StateActualServicioStatus actualServiceStatus = new StateActualServicioStatus(state.getName(),mStateActualServiceStatusRepository.ActualStatus(id));
+      return actualServiceStatus;
+    } catch (Exception ex) {
+      logger.error(ex);
+      throw new IllegalArgumentException("No se encontro el Estado con ID "+ id);
+    }
+  }
+
+  public List<StateActualServicioStatus> actualServiceStatus(){
+    List<StateActualServicioStatus> stateList = new ArrayList<>();
+
+    for (State state : mStateRepository.findAll()) {
+      List<ServiceActualState> list = mStateActualServiceStatusRepository.ActualStatus(state.getId());
+      StateActualServicioStatus actualServiceStatus = new StateActualServicioStatus(state.getName(),list);
+      stateList.add(actualServiceStatus);
+    }
+    
+    return stateList;
   }
 
 }
