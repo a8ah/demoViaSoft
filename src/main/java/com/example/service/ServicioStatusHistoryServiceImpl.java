@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,7 @@ import org.jsoup.select.Elements;
 public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryService {
 
   protected final Log logger = LogFactory.getLog(this.getClass());
+  final int count=8;
 
   @Autowired
   IServicioStatusHistoryRepository mRepository;
@@ -187,7 +190,7 @@ public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryS
   public StateActualServicioStatus actualServiceStatusByState(UUID id){ 
     final State state = mStateRepository.findById(id).orElse(null);
     try {
-      StateActualServicioStatus actualServiceStatus = new StateActualServicioStatus(state.getName(),mStateActualServiceStatusRepository.ActualStatus(id));
+      StateActualServicioStatus actualServiceStatus = new StateActualServicioStatus(state.getName(),mStateActualServiceStatusRepository.ActualStatus(id,8,null,null));
       return actualServiceStatus;
     } catch (Exception ex) {
       logger.error(ex);
@@ -199,7 +202,22 @@ public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryS
     List<StateActualServicioStatus> stateList = new ArrayList<>();
 
     for (State state : mStateRepository.findAll()) {
-      List<ServiceActualState> list = mStateActualServiceStatusRepository.ActualStatus(state.getId());
+      List<ServiceActualState> list = mStateActualServiceStatusRepository.ActualStatus(state.getId(),8,null,null);
+      StateActualServicioStatus actualServiceStatus = new StateActualServicioStatus(state.getName(),list);
+      stateList.add(actualServiceStatus);
+    }
+    
+    return stateList;
+  }
+
+  public List<StateActualServicioStatus> serviceStatusByTimeRange(LocalDate inicialDate,LocalDate finallDate){
+    List<StateActualServicioStatus> stateList = new ArrayList<>();
+
+    final var fechaInicio = inicialDate != null ? inicialDate.atStartOfDay() : null;
+    final var fechaFin = finallDate != null ? finallDate.atTime(LocalTime.MAX) : null;
+
+    for (State state : mStateRepository.findAll()) {
+      List<ServiceActualState> list = mStateActualServiceStatusRepository.ActualStatus(state.getId(),8,fechaInicio,fechaFin);
       StateActualServicioStatus actualServiceStatus = new StateActualServicioStatus(state.getName(),list);
       stateList.add(actualServiceStatus);
     }
