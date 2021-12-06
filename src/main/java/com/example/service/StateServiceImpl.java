@@ -21,7 +21,6 @@ public class StateServiceImpl implements IStateService{
   protected final Log logger = LogFactory.getLog(this.getClass());
 
 @Autowired
-static
   IStateRepository mRepository;
 
 @Override
