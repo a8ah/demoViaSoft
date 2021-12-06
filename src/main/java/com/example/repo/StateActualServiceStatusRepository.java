@@ -54,7 +54,7 @@ public class StateActualServiceStatusRepository {
 
     final var q = this.em.createQuery(query);
     var items= q.getResultList();
-    if(maxRow<0){
+    if(maxRow>0){
       items = q.setMaxResults(8).getResultList();
     }
     
