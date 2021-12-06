@@ -33,5 +33,7 @@ public class MoreAffectedState {
         this.affectedTimes = affectedTimes;
     }
 
+    public MoreAffectedState(){}
+
 
 }

@@ -52,7 +52,10 @@ public class MoreAffectedStateRepository {
     query.orderBy(new OrderImpl(cb.count(root.get(ServicioStatusHistory_.state).get(State_.id)), false));
 
     final var q = this.em.createQuery(query);
-    var items = q.setMaxResults(1).getSingleResult();
+    var items= new MoreAffectedState();
+    if( q.getResultList().size()>0) {
+    items = q.setMaxResults(1).getSingleResult();
+   }    
     return items;
   }
 
