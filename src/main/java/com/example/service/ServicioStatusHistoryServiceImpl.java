@@ -216,8 +216,9 @@ public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryS
     final var fechaInicio = inicialDate != null ? inicialDate.atStartOfDay() : null;
     final var fechaFin = finallDate != null ? finallDate.atTime(LocalTime.MAX) : null;
 
+    final var maxResult= -1;
     for (State state : mStateRepository.findAll()) {
-      List<ServiceActualState> list = mStateActualServiceStatusRepository.ActualStatus(state.getId(),8,fechaInicio,fechaFin);
+      List<ServiceActualState> list = mStateActualServiceStatusRepository.ActualStatus(state.getId(),maxResult,fechaInicio,fechaFin);
       StateActualServicioStatus actualServiceStatus = new StateActualServicioStatus(state.getName(),list);
       stateList.add(actualServiceStatus);
     }

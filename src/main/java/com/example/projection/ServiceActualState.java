@@ -4,7 +4,15 @@ import com.example.entity.Status;
 
 public class ServiceActualState {
 
-    private String state;
+    private String service;
+
+    public String getService() {
+        return this.service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
 
     private Status status;
 
@@ -17,16 +25,10 @@ public class ServiceActualState {
     }
     
 
-    public String getState() {
-        return this.state;
-    }
+    
 
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public ServiceActualState(String state, Status status) {
-        this.state = state;
+    public ServiceActualState(String service, Status status) {
+        this.service = service;
         this.status = status;
     }
 
