@@ -41,24 +41,35 @@ public class ServicioStatusHistoryController {
 
   @GetMapping("actual-status-by-state")
   public List<StateActualServicioStatus> actualServiceStatus() {
-    return mService.actualServiceStatus();
+    var pageNumber=1;
+    var pageSize=10;
+    return mService.actualServiceStatus(pageNumber,pageSize);
   }
 
   @GetMapping("actual-status/{id}")
-  public Object actualServiceStatusByState(@PathVariable UUID id) {
-    return mService.actualServiceStatusByState(id);
+  public Object actualServiceStatusByState(@PathVariable UUID id) { 
+       var pageNumber=1;
+       var pageSize=10;
+       
+    return mService.actualServiceStatusByState(pageNumber,pageSize,id);
   }
 
   @GetMapping("status-by-time-range")
   public Object serviceStatusByTimeRange(@RequestParam(required = false) String startDate,
-      @RequestParam(required = false) String endDate) {  
+      @RequestParam(required = false) String endDate,
+      @RequestParam(required = true) int pageNumber,
+      @RequestParam(required = true) int pageSize) {  
 
     // convert String to LocalDate
     LocalDate inicialDate = LocalDate.parse(startDate);
     LocalDate finalDate = LocalDate.parse(endDate);
+    if(pageNumber<=0 || pageSize<=0 ){
+      pageNumber=1;
+      pageSize=10;
+    }
 
 
-    return mService.serviceStatusByTimeRange(inicialDate, finalDate);
+    return mService.serviceStatusByTimeRange(pageNumber,pageSize,inicialDate, finalDate);
   }
 
 }

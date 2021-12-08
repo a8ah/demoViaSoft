@@ -187,10 +187,10 @@ public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryS
     return mMoreAffectedStateRepository.moreAffectedState();
   }
 
-  public StateActualServicioStatus actualServiceStatusByState(UUID id){ 
+  public StateActualServicioStatus actualServiceStatusByState(int pageNumber, int pageSize, UUID id){ 
     final State state = mStateRepository.findById(id).orElse(null);
     try {
-      StateActualServicioStatus actualServiceStatus = new StateActualServicioStatus(state.getName(),mStateActualServiceStatusRepository.ActualStatus(id,8,null,null));
+      StateActualServicioStatus actualServiceStatus = new StateActualServicioStatus(state.getName(),mStateActualServiceStatusRepository.ActualStatus(pageNumber, pageSize,id,8,null,null));
       return actualServiceStatus;
     } catch (Exception ex) {
       logger.error(ex);
@@ -198,11 +198,11 @@ public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryS
     }
   }
 
-  public List<StateActualServicioStatus> actualServiceStatus(){
+  public List<StateActualServicioStatus> actualServiceStatus(int pageNumber, int pageSize){
     List<StateActualServicioStatus> stateList = new ArrayList<>();
 
     for (State state : mStateRepository.findAll()) {
-      List<ServiceActualState> list = mStateActualServiceStatusRepository.ActualStatus(state.getId(),8,null,null);
+      List<ServiceActualState> list = mStateActualServiceStatusRepository.ActualStatus(pageNumber,pageSize,state.getId(),8,null,null);
       StateActualServicioStatus actualServiceStatus = new StateActualServicioStatus(state.getName(),list);
       stateList.add(actualServiceStatus);
     }
@@ -210,7 +210,7 @@ public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryS
     return stateList;
   }
 
-  public List<StateActualServicioStatus> serviceStatusByTimeRange(LocalDate inicialDate,LocalDate finallDate){
+  public List<StateActualServicioStatus> serviceStatusByTimeRange(int pageNumber, int pageSize, LocalDate inicialDate,LocalDate finallDate){
     List<StateActualServicioStatus> stateList = new ArrayList<>();
 
     final var fechaInicio = inicialDate != null ? inicialDate.atStartOfDay() : null;
@@ -218,7 +218,7 @@ public class ServicioStatusHistoryServiceImpl implements IServicioStarusHistoryS
 
     final var maxResult= -1;
     for (State state : mStateRepository.findAll()) {
-      List<ServiceActualState> list = mStateActualServiceStatusRepository.ActualStatus(state.getId(),maxResult,fechaInicio,fechaFin);
+      List<ServiceActualState> list = mStateActualServiceStatusRepository.ActualStatus(pageNumber,pageSize, state.getId(),maxResult,fechaInicio,fechaFin);
       StateActualServicioStatus actualServiceStatus = new StateActualServicioStatus(state.getName(),list);
       stateList.add(actualServiceStatus);
     }
